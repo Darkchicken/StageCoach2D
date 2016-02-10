@@ -15,18 +15,19 @@ public class PlayerControl : MonoBehaviour
     //how far to move up and down to switch lanes
     private float laneWidth = 1.5f;
     private float shootForce = 5;
-    //distance a touch must move to be considered a swipe
-    private float distanceForSwipe = 10;
+    
     //should store lane player is currently in, assign to starting lane value
     //lanes are 1-5 going up
     private float currentLane = 3;
 
     GameObject playerBullet;
-    float speed = 10f;
+    float speed = 5f;
 
     ///Swipe checks
-    bool couldBeSwipe = false;
-    float swipeStartTime;
+    float swipeDist;
+    bool stopMovement = false;
+    float distanceForSwipe = 2.0f;
+
     float maxSwipeTime;
     float minSwipeDist;
 
@@ -69,57 +70,66 @@ public class PlayerControl : MonoBehaviour
             }
         }
         //firing
+
         if (Input.GetMouseButtonDown(0))
         {
-            //...setting shoot direction
-            Vector3 shootDirection;
-            shootDirection = Input.mousePosition;
-            shootDirection.z = 0.0f;
-            shootDirection = Camera.main.ScreenToWorldPoint(shootDirection);
-            shootDirection = shootDirection - transform.position;
-            //...instantiating the rocket
-            GameObject bulletInstance = Instantiate(playerBullet, transform.position, Quaternion.Euler(new Vector3(0, 0, 0))) as GameObject;
-            bulletInstance.GetComponent<Rigidbody2D>().velocity = new Vector2(shootDirection.x * speed, shootDirection.y * speed);
-
+            //FireBullet();
         }
         /////////////////////////////////////////////////////////
-
-        /*
-        //check if there are touches
-
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved )
+       
+        Touch[] touch = Input.touches;
+        for (int i = 0; i < Input.touchCount; i++)
         {
-            // Get movement of the finger since last frame
-            Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-        //if player swipes up
-
-            if (touchDeltaPosition.y > distanceForSwipe)
+            swipeDist = touch[i].deltaPosition.y;
+            if (touch[i].phase == TouchPhase.Moved)
             {
-                if (currentLane < 5)
+                if (swipeDist > distanceForSwipe) //swipe left
                 {
-                    //boolean is true for up, false for down
-                    SwitchLanes(true);
-                    currentLane++;
+                    Debug.Log("Swipe Up");
+                    if (currentLane < 5 && !stopMovement)
+                    {
+                        //boolean is true for up, false for down
+                        SwitchLanes(true);
+                        currentLane++;
+                        stopMovement = true;
+                    }
                 }
-            }
-            //if player swipes down
-            if (touchDeltaPosition.y < distanceForSwipe)
+                if (swipeDist < -distanceForSwipe) //swipe right
+                {
+                    Debug.Log("Swipe Down");
+                    if (currentLane > 1 && !stopMovement)
+                    {
+                        //boolean is true for up, false for down
+                        SwitchLanes(false);
+                        currentLane--;
+                        stopMovement = true;
+                    }
+                }
+             }
+            if(touch[i].phase == TouchPhase.Ended)
             {
-                if (currentLane > 1)
+                
+                if(swipeDist < distanceForSwipe && swipeDist > -distanceForSwipe)
                 {
-                    //boolean is true for up, false for down
-                    SwitchLanes(false);
-                    currentLane--;
+                    FireBullet();
                 }
+                stopMovement = false;
             }
-
-
-
         }
-        */
 
     }
-
+    public void FireBullet()
+    {
+        //...setting shoot direction
+        Vector3 shootDirection;
+        shootDirection = Input.mousePosition;
+        shootDirection.z = 0.0f;
+        shootDirection = Camera.main.ScreenToWorldPoint(shootDirection);
+        shootDirection = shootDirection - transform.position;
+        //...instantiating the rocket
+        GameObject bulletInstance = Instantiate(playerBullet, transform.position, Quaternion.Euler(new Vector3(0, 0, 0))) as GameObject;
+        bulletInstance.GetComponent<Rigidbody2D>().velocity = new Vector2(shootDirection.x * speed, shootDirection.y * speed);
+    }
     public void SwitchLanes(bool up)
     {
         //move player up
