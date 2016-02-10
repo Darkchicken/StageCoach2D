@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
+    GameObject gameOverText;
 
     public int health;
     //knockback function
@@ -37,12 +39,19 @@ public class PlayerControl : MonoBehaviour
         playerBullet = Resources.Load("PlayerBullet") as GameObject;
         //sets player initial position
         startPos = transform.position;
+        gameOverText = GameObject.Find("GameOverText");
+        gameOverText.SetActive(false);
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Debug.Log("Reset");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
         //advance player position if player has been knocked back
         if(transform.position.x < startPos.x)
         {
@@ -73,7 +82,7 @@ public class PlayerControl : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            //FireBullet();
+            FireBullet();
         }
         /////////////////////////////////////////////////////////
        
@@ -151,11 +160,12 @@ public class PlayerControl : MonoBehaviour
             Destroy(col.gameObject);
         }
 
-        if(col.gameObject.name == "DeathZone" || col.gameObject.name == "BasicEnemy")
+        if(col.gameObject.name == "DeathZone" || col.gameObject.tag == "Enemy")
         {
             Debug.Log("YOU DIED!!!!!");
             Destroy(this.gameObject);
-          
+            gameOverText.SetActive(true);
+
         }
     }
 

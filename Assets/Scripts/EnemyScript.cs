@@ -7,6 +7,8 @@ public class EnemyScript : MonoBehaviour {
     GameObject enemyBullet;
     GameObject player;
 
+    Score scoreScript;
+
     float minFireRate = 5;
     float maxFireRate = 10;
 
@@ -15,6 +17,7 @@ public class EnemyScript : MonoBehaviour {
     {
         enemyBullet = Resources.Load("EnemyBullet") as GameObject;
         player = GameObject.Find("Player");
+        scoreScript = GameObject.Find("ScoreText").GetComponent<Score>();
         InvokeRepeating("FireBullet", (Random.Range(minFireRate, maxFireRate)), (Random.Range(minFireRate, maxFireRate)));
     }
 	
@@ -45,6 +48,7 @@ public class EnemyScript : MonoBehaviour {
         if (col.gameObject.tag == "PlayerBullet")
         {
             Debug.Log("Killed Enemy");
+            scoreScript.UpdateScore();
             //destroy bullet
             Destroy(col.gameObject);
             //destory enemy
