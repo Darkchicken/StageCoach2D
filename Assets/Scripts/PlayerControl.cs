@@ -59,6 +59,7 @@ public class PlayerControl : MonoBehaviour
         }
         ///Testing movement controls (avoids need for touch)
         /// ///////////////////////////////////////////////////
+        /*
         if (Input.GetKeyDown("up"))
         {
             if (currentLane < 5)
@@ -84,6 +85,7 @@ public class PlayerControl : MonoBehaviour
         {
             FireBullet();
         }
+        */
         /////////////////////////////////////////////////////////
        
         Touch[] touch = Input.touches;
